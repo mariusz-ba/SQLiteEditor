@@ -38,6 +38,10 @@ TableDialog::TableDialog(QWidget *parent) :
     connect(ui->removeField_toolButton, SIGNAL(clicked()), this, SLOT(removeField()));
     connect(ui->moveUp_toolButton, SIGNAL(clicked()), this, SLOT(moveUpField()));
     connect(ui->moveDown_toolButton, SIGNAL(clicked()), this, SLOT(moveDownField()));
+
+    ui->tableView->setEditTriggers(QTableView::AllEditTriggers);
+    ui->tableView->setMouseTracking(true);
+    connect(ui->tableView, SIGNAL(entered(QModelIndex)), this, SLOT(onTableViewEntered(QModelIndex)));
 }
 
 TableDialog::~TableDialog()
@@ -57,6 +61,11 @@ void TableDialog::updateTextBrowser()
     {
         text += "    ";
         text.append("'"+m_model->index(i,0).data().toString()+"' "+m_model->index(i,1).data().toString());
+
+        if(m_model->index(i, 2).data().toBool()) text.append(" NOT NULL");
+        if(m_model->index(i, 3).data().toBool()) text.append(" PRIMARY KEY");
+        if(m_model->index(i, 4).data().toBool()) text.append(" AUTOINCREMENT");
+
         text.append(",\n");
     }
     text.remove(text.lastIndexOf(","),1);
@@ -105,6 +114,12 @@ void TableDialog::moveDownField()
     QList<QStandardItem*> items = m_model->takeRow(row);
     m_model->insertRow(row+1, items);
     updateTextBrowser();
+}
+
+void TableDialog::onTableViewEntered(const QModelIndex &index)
+{
+    if(index.column() >= 2 && index.column() <= 4)
+        ui->tableView->setCurrentIndex(index);
 }
 
 void TableDialog::accept()

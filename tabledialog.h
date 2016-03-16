@@ -25,6 +25,8 @@ private slots:
     void moveUpField();
     void moveDownField();
 
+    void onTableViewEntered(const QModelIndex& index);
+
 protected:
     virtual void accept();
 
