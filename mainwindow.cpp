@@ -11,9 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setupUi();
 
-    m_treeModel = new QStandardItemModel(this);
-    m_treeModel->setColumnCount(2);
-    m_treeModel->setHorizontalHeaderLabels({"Name", "Type"});
+    m_treeModel = new DatabaseTreeModel(this);
 
     m_sqlTableModel = new QSqlTableModel(this);
     m_sqlTableModel->setEditStrategy(QSqlTableModel::OnFieldChange);
@@ -21,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->treeView->setModel(m_treeModel);
     ui->tableView->setModel(m_sqlTableModel);
     emit databaseOpened(false);
+
+    m_sqlQueryModel = new QSqlQueryModel(this);
+    ui->sqlQuery_tableView->setModel(m_sqlQueryModel);
 }
 
 MainWindow::~MainWindow()
@@ -115,7 +116,6 @@ void MainWindow::closeDatabase()
     if(db.isOpen())
         db.close();
     m_sqlTableModel->clear();
-    m_treeModel->clear();
     ui->table_ComboBox->clear();
 
     emit databaseOpened(false);
@@ -150,7 +150,7 @@ void MainWindow::addRecord()
     if(db.isOpen())
     {
         QSqlQuery insertion(db);
-        insertion.prepare("INSERT INTO "+ui->table_ComboBox->currentText()+" DEFAULT VALUES");
+        insertion.prepare(QString("INSERT INTO '%1' DEFAULT VALUES").arg(ui->table_ComboBox->currentText()));
         insertion.exec();
 
         qDebug() << "Adding row to " << ui->table_ComboBox->currentText();
@@ -180,20 +180,11 @@ void MainWindow::setCurrentTable(QString table_name)
 void MainWindow::createTable()
 {
     TableDialog dialog;
-    switch(dialog.exec())
-    {
-    case TableDialog::Accepted:
+    if(dialog.exec() == TableDialog::Accepted)
     {
         QSqlQuery creating(dialog.getQuery());
         creating.exec();
         loadDatabase();
-        break;
-    }
-
-    case TableDialog::Rejected:
-    {
-        break;
-    }
     }
 }
 
@@ -205,7 +196,7 @@ void MainWindow::modifyTable()
 void MainWindow::deleteTable()
 {
     QModelIndex index = ui->treeView->currentIndex();
-    if(index.parent() == QModelIndex()) return;
+    if(index.parent() != QModelIndex()) return;
 
     int ret = QMessageBox::warning(this, tr("Warning"), tr("Are you sure you want to delete table '%1' ?").arg(index.data().toString()), QMessageBox::Yes | QMessageBox::No);
 
@@ -258,6 +249,37 @@ void MainWindow::treeViewActivated(const QModelIndex &index)
     }
 }
 
+void MainWindow::openSqlFile()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open SQL file"), QDir::homePath());
+    QFile file(fileName);
+    if(!file.open(QFile::ReadOnly | QFile::Text))
+        return;
+
+    QTextStream ts(&file);
+    ui->sqlQuery_textEdit->setText(ts.readAll());
+    file.close();
+}
+
+void MainWindow::executeSQL()
+{
+    QSqlQuery query;
+    query.prepare(ui->sqlQuery_textEdit->toPlainText());
+    query.exec();
+    m_sqlQueryModel->setQuery(query);
+    loadDatabase();
+}
+
+void MainWindow::executeSQLline()
+{
+    QSqlQuery query;
+    query.prepare(ui->sqlQuery_textEdit->textCursor().block().text().remove("\n"));
+    query.exec();
+    m_sqlQueryModel->setQuery(query);
+
+    loadDatabase();
+}
+
 void MainWindow::setupUi()
 {
     //Setup main window
@@ -301,7 +323,6 @@ void MainWindow::setupUi()
     connect(ui->actionCreate_Table, SIGNAL(triggered()), this, SLOT(createTable()));
     connect(ui->actionModify_Table, SIGNAL(triggered()), this, SLOT(modifyTable()));
     connect(ui->actionDelete_Table, SIGNAL(triggered()), this, SLOT(deleteTable()));
-    //connect(ui->actionCreate_Table, SIGNAL(triggered()), this, SLOT(createTable()));
 
     //Setting up connections for enabling and disabling buttons
     connect(this, SIGNAL(databaseOpened(bool)), ui->actionCreate_Table, SLOT(setEnabled(bool)));
@@ -309,43 +330,31 @@ void MainWindow::setupUi()
     connect(this, SIGNAL(databaseOpened(bool)), ui->actionDelete_Table, SLOT(setEnabled(bool)));
     connect(this, SIGNAL(databaseOpened(bool)), ui->actionWrite_Changes, SLOT(setEnabled(bool)));
 
-    connect(ui->treeView, &QTreeView::expanded, [&](){ui->treeView->resizeColumnToContents(0);});
+    //Setting up connections for 'Execute SQL' tab
+    connect(ui->runSQL_toolButton, SIGNAL(clicked()), this, SLOT(executeSQL()));
+    connect(ui->openSQLFile_toolButton, SIGNAL(clicked()), this, SLOT(openSqlFile()));
+    connect(ui->runCurrentLine_toolButton, SIGNAL(clicked()), this, SLOT(executeSQLline()));
 
+    //Setting up context menu for treeview
     ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->treeView, &QTreeView::expanded, [&](){ui->treeView->resizeColumnToContents(0);});
     connect(ui->treeView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onCustomContextMenu(QPoint)));
-
     connect(ui->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(treeViewActivated(QModelIndex)));
+
+    ui->treeView->setRootIsDecorated(true);
 }
 
 void MainWindow::loadDatabase()
 {
     if(db.isOpen())
     {
-        m_treeModel->clear();
-        m_treeModel->setHorizontalHeaderLabels({"Name", "Type"});
         ui->table_ComboBox->clear();
 
-        TableInfoReaderFactory factory;
-        TableInfoReader* reader = factory.createTableReader(db);
+        DatabaseTreeParser parser;
+        DatabaseTreeNode* rootNode = parser.parse(db);
+        m_treeModel->setRootNode(rootNode);
 
-        QStringList tables = db.tables();
-
-        QStandardItem* root_item = new QStandardItem(tr("Tables (%1)").arg(QString::number(tables.size())));
-        for(int i=0; i<tables.size(); ++i)
-        {
-            QList<ColumnInfo> columnInfo = reader->retrieveTableInfo(tables.at(i));
-            QStandardItem* table_item = new QStandardItem(QIcon(":/img/icon-table.png"),tables.at(i));
-            for(int j=0; j<columnInfo.size(); ++j)
-            {
-                QStandardItem* field_item = new QStandardItem(QIcon(":/img/icon-field.png"), columnInfo.at(j).name());
-                QStandardItem* field_item_type = new QStandardItem(columnInfo.at(j).type());
-                table_item->appendRow({field_item, field_item_type});
-            }
-            root_item->appendRow({table_item, new QStandardItem("Table")});
-            ui->table_ComboBox->addItem(QIcon(":/img/icon-table.png"), tables.at(i));
-        }
-
-        m_treeModel->appendRow(root_item);
-        ui->treeView->expand(root_item->index());
+        ui->table_ComboBox->addItems(db.tables());
+        ui->treeView->resizeColumnToContents(0);
     }
 }

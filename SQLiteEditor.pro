@@ -20,7 +20,10 @@ SOURCES += main.cpp\
     sqlitetableinforeader.cpp \
     tableinfo.cpp \
     tableinforeaderfactory.cpp \
-    tabledialogdelegate.cpp
+    tabledialogdelegate.cpp \
+    databasetreemodel.cpp \
+    databasetreenode.cpp \
+    databasetreeparser.cpp
 
 HEADERS  += mainwindow.h \
     tabledialog.h \
@@ -29,7 +32,10 @@ HEADERS  += mainwindow.h \
     tableinfo.h \
     tableinforeader.h \
     tableinforeaderfactory.h \
-    tabledialogdelegate.h
+    tabledialogdelegate.h \
+    databasetreemodel.h \
+    databasetreenode.h \
+    databasetreeparser.h
 
 FORMS    += mainwindow.ui \
     tabledialog.ui

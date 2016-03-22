@@ -11,6 +11,8 @@
         <file>img/icon-field-new.png</file>
         <file>img/icon-field-remove.png</file>
         <file>img/icon-field.png</file>
-        <file>img/icon-tick.png</file>
+        <file>img/icon-open.png</file>
+        <file>img/icon-run.png</file>
+        <file>img/icon-run-current.png</file>
     </qresource>
 </RCC>

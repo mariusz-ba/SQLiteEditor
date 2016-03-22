@@ -2,18 +2,21 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QSqlDatabase>
 #include <QMessageBox>
-#include <QFileDialog>
-#include <QFile>
-#include <QStandardItemModel>
+#include <QTextBlock>
+
+#include <QSqlDatabase>
 #include <QSqlTableModel>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
+
+#include <QFileDialog>
+#include <QFile>
+
+#include "databasetreeparser.h"
+#include "databasetreemodel.h"
 #include "tabledialog.h"
-#include "sqlitetableinforeader.h"
-#include "tableinforeaderfactory.h"
 
 namespace Ui {
 class MainWindow;
@@ -47,14 +50,19 @@ private slots:
     void onCustomContextMenu(const QPoint& point);
     void treeViewActivated(const QModelIndex& index);
 
+    void openSqlFile();
+    void executeSQL();
+    void executeSQLline();
+
 private:
     Ui::MainWindow *ui;
     void setupUi();
     void loadDatabase();
 
     QSqlDatabase db;
-    QStandardItemModel* m_treeModel;
+    DatabaseTreeModel* m_treeModel;
     QSqlTableModel* m_sqlTableModel;
+    QSqlQueryModel* m_sqlQueryModel;
 
     bool m_opened;
 };
