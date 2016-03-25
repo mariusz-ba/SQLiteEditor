@@ -10,6 +10,8 @@ TableDialog::TableDialog(QWidget *parent) :
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
+    m_highlighter = new CodeEditorHighlighter(ui->textBrowser->document());
+
     m_delegate = new TableDialogDelegate();
     m_model = new QStandardItemModel(this);
     m_model->setColumnCount(5);

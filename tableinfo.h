@@ -1,3 +1,14 @@
+/**
+ *
+ * TableInfo.h
+ *
+ * Created by Mariusz Baran on 14.03.2016
+ * Copyright (c) 2016 Mariusz Baran. All rights reserved
+ *
+ * This class is storing information describing a specified table
+ * in database.
+ */
+
 #ifndef TABLEINFO_H
 #define TABLEINFO_H
 

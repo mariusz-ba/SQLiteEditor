@@ -1,3 +1,13 @@
+/**
+ *
+ * MainWindow.h
+ *
+ * Created by Mariusz Baran on 9.03.2016
+ * Copyright (c) 2016 Mariusz Baran. All rights reserved
+ *
+ * This class represents main window of the application.
+ */
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -17,6 +27,8 @@
 #include "databasetreeparser.h"
 #include "databasetreemodel.h"
 #include "tabledialog.h"
+
+#include "codeeditor.h"
 
 namespace Ui {
 class MainWindow;
@@ -65,6 +77,8 @@ private:
     QSqlQueryModel* m_sqlQueryModel;
 
     bool m_opened;
+
+    QCompleter* completer;
 };
 
 #endif // MAINWINDOW_H

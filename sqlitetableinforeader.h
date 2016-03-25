@@ -1,3 +1,13 @@
+/**
+ *
+ * SQLiteTableInfoReader.h
+ *
+ * Created by Mariusz Baran on 14.03.2016
+ * Copyright (c) 2016 Mariusz Baran. All rights reserved
+ *
+ * This class is responsible for extracting data from SQLite database.
+ */
+
 #ifndef SQLITETABLEINFOREADER_H
 #define SQLITETABLEINFOREADER_H
 

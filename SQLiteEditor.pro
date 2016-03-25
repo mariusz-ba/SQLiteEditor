@@ -23,7 +23,9 @@ SOURCES += main.cpp\
     tabledialogdelegate.cpp \
     databasetreemodel.cpp \
     databasetreenode.cpp \
-    databasetreeparser.cpp
+    databasetreeparser.cpp \
+    codeeditor.cpp \
+    codeeditorhighlighter.cpp
 
 HEADERS  += mainwindow.h \
     tabledialog.h \
@@ -35,7 +37,9 @@ HEADERS  += mainwindow.h \
     tabledialogdelegate.h \
     databasetreemodel.h \
     databasetreenode.h \
-    databasetreeparser.h
+    databasetreeparser.h \
+    codeeditor.h \
+    codeeditorhighlighter.h
 
 FORMS    += mainwindow.ui \
     tabledialog.ui

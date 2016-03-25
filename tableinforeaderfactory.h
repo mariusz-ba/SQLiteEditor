@@ -1,3 +1,14 @@
+/**
+ *
+ * TableInfoReaderFactory.h
+ *
+ * Created by Mariusz Baran on 14.03.2016
+ * Copyright (c) 2016 Mariusz Baran. All rights reserved
+ *
+ * Factory class creating proper TableInfoReader depending on the SQL
+ * driver.
+ */
+
 #ifndef TABLEINFOREADERFACTORY_H
 #define TABLEINFOREADERFACTORY_H
 

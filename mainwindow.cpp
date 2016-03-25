@@ -22,6 +22,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_sqlQueryModel = new QSqlQueryModel(this);
     ui->sqlQuery_tableView->setModel(m_sqlQueryModel);
+
+    QStringList wordList;
+    wordList << "SELECT" << "FROM" << "WHERE" << "ORDER" << "BY" << "AS" << "COUNT"
+             << "HAVING" << "GROUP" << "INSERT" << "INTO" << "VALUES" << "CREATE"
+             << "TABLE" << "UPDATE" << "SET" << "AND" << "OR";
+
+    completer = new QCompleter(wordList, this);
+    ui->sqlQuery_textEdit->setCompleter(completer);
 }
 
 MainWindow::~MainWindow()

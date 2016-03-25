@@ -1,3 +1,13 @@
+/**
+ *
+ * DatabaseTreeModel.h
+ *
+ * Created by Mariusz Baran on 22.03.2016
+ * Copyright (c) 2016 Mariusz Baran. All rights reserved
+ *
+ * This model is storing database structure.
+ */
+
 #ifndef DatabaseTreeModel_H
 #define DatabaseTreeModel_H
 

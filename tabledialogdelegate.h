@@ -1,3 +1,13 @@
+/**
+ *
+ * TableDialogDelegate.h
+ *
+ * Created by Mariusz Baran on 14.03.2016
+ * Copyright (c) 2016 Mariusz Baran. All rights reserved
+ *
+ * Simple item delegate for fields table in TableDialog
+ */
+
 #ifndef TABLEDIALOGDELEGATE_H
 #define TABLEDIALOGDELEGATE_H
 
