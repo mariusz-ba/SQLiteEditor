@@ -30,8 +30,8 @@ class SQLiteTableInfoReader : public TableInfoReader
 public:
     SQLiteTableInfoReader(const QSqlDatabase& database);
     QList<ColumnInfo> retrieveTableInfo(const QString& tableName);
-    QString getFiledType(const QString &tableName, const int &column, const QSqlDatabase& database) const;
 private:
+    QString getFiledType(const QString &tableName, const int &column, const QSqlDatabase& database) const;
     QList<TableInfo> m_tableInfo;
 };
 
