@@ -15,9 +15,11 @@
 
 #include <QDialog>
 #include <QStandardItemModel>
-
 #include "tabledialogdelegate.h"
 #include "codeeditorhighlighter.h"
+
+#include "sqlitetableinforeader.h"
+#include "tableinforeaderfactory.h"
 
 namespace Ui {
 class TableDialog;
@@ -31,6 +33,8 @@ public:
     explicit TableDialog(QWidget *parent = 0);
     ~TableDialog();
     QString getQuery() const;
+    //void loadTable(const QString& tableName, const QStringList& fields);
+    void loadTable(const QSqlDatabase& database, const QString& tableName);
 
 private slots:
     void updateTextBrowser();
@@ -38,8 +42,6 @@ private slots:
     void removeField();
     void moveUpField();
     void moveDownField();
-
-    void onTableViewEntered(const QModelIndex& index);
 
 protected:
     virtual void accept();

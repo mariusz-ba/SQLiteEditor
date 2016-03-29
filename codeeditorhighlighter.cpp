@@ -30,13 +30,14 @@ CodeEditorHighlighter::CodeEditorHighlighter(QTextDocument* parent)
     rule.pattern = QRegExp("\".*\"");
     rule.format = quotationFormat;
     highlightingRules.append(rule);
+    rule.pattern = QRegExp("'.*'");
+    highlightingRules.append(rule);
 
     QStringList types;
     types << "\\binteger\\b" << "\\btext\\b" << "\\breal\\b" << "\\bbool\\b" << "\\bblob\\b"
           << "\\bprimary\\b" << "\\bkey\\b" << "\\bnot\\b" << "\\bnull\\b" << "\\bautoincrement\\b";
 
     typeFormat.setForeground(Qt::blue);
-    typeFormat.setFontItalic(true);
 
     foreach(const QString& type, types) {
         rule.pattern = QRegExp(type);

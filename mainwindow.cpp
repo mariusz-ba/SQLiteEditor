@@ -198,13 +198,21 @@ void MainWindow::createTable()
 
 void MainWindow::modifyTable()
 {
+    TableDialog dialog;
+    dialog.loadTable(db, ui->treeView->currentIndex().data().toString());
 
+    if(dialog.exec() == TableDialog::Accepted)
+    {
+        QSqlQuery creating(dialog.getQuery());
+        creating.exec();
+        loadDatabase();
+    }
 }
 
 void MainWindow::deleteTable()
 {
     QModelIndex index = ui->treeView->currentIndex();
-    if(index.parent() != QModelIndex()) return;
+    if(index.parent().parent() != QModelIndex()) return;
 
     int ret = QMessageBox::warning(this, tr("Warning"), tr("Are you sure you want to delete table '%1' ?").arg(index.data().toString()), QMessageBox::Yes | QMessageBox::No);
 
@@ -271,10 +279,25 @@ void MainWindow::openSqlFile()
 
 void MainWindow::executeSQL()
 {
-    QSqlQuery query;
-    query.prepare(ui->sqlQuery_textEdit->toPlainText());
-    query.exec();
-    m_sqlQueryModel->setQuery(query);
+    /**
+     * Execute all SQL instructions separated by ';' character
+     * The regular expression below represents signle SQL instruction with semicolon at the end.
+     */
+    QRegExp expression("[^;]*;");
+    int index = expression.indexIn(ui->sqlQuery_textEdit->toPlainText(), 0);
+
+    while(index >= 0)
+    {
+        int length = expression.matchedLength();
+
+        QSqlQuery query;
+        query.prepare(ui->sqlQuery_textEdit->toPlainText().mid(index, length));
+        query.exec();
+        m_sqlQueryModel->setQuery(query);
+
+        index = expression.indexIn(ui->sqlQuery_textEdit->toPlainText(), index + length);
+    }
+
     loadDatabase();
 }
 
@@ -345,7 +368,7 @@ void MainWindow::setupUi()
 
     //Setting up context menu for treeview
     ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->treeView, &QTreeView::expanded, [&](){ui->treeView->resizeColumnToContents(0);});
+    //rconnect(ui->treeView, &QTreeView::expanded, [&](){ui->treeView->resizeColumnToContents(0);});
     connect(ui->treeView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onCustomContextMenu(QPoint)));
     connect(ui->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(treeViewActivated(QModelIndex)));
 
@@ -363,6 +386,7 @@ void MainWindow::loadDatabase()
         m_treeModel->setRootNode(rootNode);
 
         ui->table_ComboBox->addItems(db.tables());
+        ui->treeView->expand(m_treeModel->index(0,0,ui->treeView->rootIndex()));
         ui->treeView->resizeColumnToContents(0);
     }
 }

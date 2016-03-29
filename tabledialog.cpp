@@ -7,6 +7,8 @@ TableDialog::TableDialog(QWidget *parent) :
     ui(new Ui::TableDialog)
 {
     ui->setupUi(this);
+    this->setWindowTitle(tr("Table"));
+    this->setWindowIcon(QIcon(":/img/icon-table.png"));
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
@@ -43,7 +45,8 @@ TableDialog::TableDialog(QWidget *parent) :
 
     ui->tableView->setEditTriggers(QTableView::AllEditTriggers);
     ui->tableView->setMouseTracking(true);
-    connect(ui->tableView, SIGNAL(entered(QModelIndex)), this, SLOT(onTableViewEntered(QModelIndex)));
+
+
 }
 
 TableDialog::~TableDialog()
@@ -51,41 +54,99 @@ TableDialog::~TableDialog()
     delete ui;
 }
 
+/**
+ * getQuery() method returns a SQL query responsible for creating new
+ * table in database.
+ */
 QString TableDialog::getQuery() const
 {
     return m_query;
 }
 
+/**
+ * loadTable() function enables user to fill tableDialog with default data. It allows
+ * user to edit structure of specific table
+ */
+void TableDialog::loadTable(const QSqlDatabase &database, const QString &tableName)
+{
+    int index = 0;
+    ui->table_lineEdit->setText(tableName);
+
+    TableInfoReaderFactory factory;
+    TableInfoReader* reader = factory.createTableReader(database);
+
+    QList<ColumnInfo> columnInfos = reader->retrieveTableInfo(tableName);
+
+    foreach(ColumnInfo cInfo, columnInfos)
+    {
+        addField();
+        m_model->setData(m_model->index(index, 0), cInfo.name());
+        m_model->setData(m_model->index(index, 1), cInfo.type().mid(0, cInfo.type().indexOf(" ")));
+        m_model->setData(m_model->index(index, 2), cInfo.type().contains("NOT NULL"));
+        m_model->setData(m_model->index(index, 3), cInfo.type().contains("PRIMARY KEY"));
+        m_model->setData(m_model->index(index, 4), cInfo.type().contains("AUTOINCREMENT"));
+        ++index;
+    }
+
+    delete reader;
+}
+
+/**
+ * Every time the user make changes in tableview or table lineedit the textBrowser is
+ * updated. It contains whole SQL query which is needed to create table.
+ */
 void TableDialog::updateTextBrowser()
 {
-    QString text = QString("CREATE TABLE '%1' (\n").arg(ui->table_lineEdit->text());
-    for(int i=0; i<m_model->rowCount(); ++i)
+    QString text;
+
+    //if(m_type == CREATE)
+    //{
+        text = QString("CREATE TABLE '%1' (\n").arg(ui->table_lineEdit->text());
+        for(int i=0; i<m_model->rowCount(); ++i)
+        {
+            text += "    ";
+            text.append("'"+m_model->index(i,0).data().toString()+"' "+m_model->index(i,1).data().toString());
+
+            if(m_model->index(i, 2).data().toBool()) text.append(" NOT NULL");
+            if(m_model->index(i, 3).data().toBool()) text.append(" PRIMARY KEY");
+            if(m_model->index(i, 4).data().toBool()) text.append(" AUTOINCREMENT");
+
+            text.append(",\n");
+        }
+        text.remove(text.lastIndexOf(","),1);
+        text.append(");");
+    //}
+    /*
+    else // MODIFY
     {
-        text += "    ";
-        text.append("'"+m_model->index(i,0).data().toString()+"' "+m_model->index(i,1).data().toString());
-
-        if(m_model->index(i, 2).data().toBool()) text.append(" NOT NULL");
-        if(m_model->index(i, 3).data().toBool()) text.append(" PRIMARY KEY");
-        if(m_model->index(i, 4).data().toBool()) text.append(" AUTOINCREMENT");
-
-        text.append(",\n");
+        //Alter table
     }
-    text.remove(text.lastIndexOf(","),1);
-    text.append(");");
+    */
+
     ui->textBrowser->setText(text);
 }
 
+/**
+ * addField() function simply adds new row in the tableview that allows user to create
+ * more fields in table.
+ */
 void TableDialog::addField()
 {
     if(m_model->rowCount() != 0)
     {
         for(int i=0;i<2; ++i)
         {
+            /**
+             * New row can be inserted only if previous row is filled with data.
+             * Informations required for every field are: its name and its type, so those
+             * fields in table must be filled.
+             */
             if(m_model->index(m_model->rowCount()-1, i).data().isNull())
                 return;
         }
     }
 
+    //On success: add row to table and update text in textbrowser
     m_model->insertRow(m_model->rowCount());
     updateTextBrowser();
 }
@@ -116,12 +177,6 @@ void TableDialog::moveDownField()
     QList<QStandardItem*> items = m_model->takeRow(row);
     m_model->insertRow(row+1, items);
     updateTextBrowser();
-}
-
-void TableDialog::onTableViewEntered(const QModelIndex &index)
-{
-    if(index.column() >= 2 && index.column() <= 4)
-        ui->tableView->setCurrentIndex(index);
 }
 
 void TableDialog::accept()

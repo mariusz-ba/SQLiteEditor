@@ -39,7 +39,7 @@ QCompleter* CodeEditor::completer() const
 /**
  * insertCopletion() takes the completion that user accepted and
  * insert it at the current text cursor position.
- * param @completion string& - completion accepted by the user
+ * @param completion string& - completion accepted by the user
  */
 void CodeEditor::insertCompletion(const QString &completion)
 {

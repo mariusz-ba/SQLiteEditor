@@ -28,7 +28,7 @@ SQLiteTableInfoReader::SQLiteTableInfoReader(const QSqlDatabase& database)
              */
             ColumnInfo columnInfo;
             columnInfo.setName(database.driver()->record(tableInfo.tableName()).fieldName(j));
-            columnInfo.setType(getFiledType(tableInfo.tableName(), j, database));
+            columnInfo.setType(getFiledType(tableInfo.tableName(), j));
             columnInfos.push_back(columnInfo);
         }
         tableInfo.setColumnInfo(columnInfos);
@@ -56,7 +56,7 @@ QList<ColumnInfo> SQLiteTableInfoReader::retrieveTableInfo(const QString &tableN
  * @param column &int const - column number starting from 0
  * @param database &QSqlDatabase const - database which function is about to use
  */
-QString SQLiteTableInfoReader::getFiledType(const QString &tableName, const int &column, const QSqlDatabase& database) const
+QString SQLiteTableInfoReader::getFiledType(const QString &tableName, const int &column) const
 {
     /**
      * For SQLite Database the 'pragma table_info(tablename)' query returns information
