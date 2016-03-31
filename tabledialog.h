@@ -30,10 +30,14 @@ class TableDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit TableDialog(QWidget *parent = 0);
+    enum DialogType {
+        CREATE,
+        MODIFY
+    };
+
+    explicit TableDialog(const DialogType& type = CREATE, QWidget *parent = 0);
     ~TableDialog();
-    QString getQuery() const;
-    //void loadTable(const QString& tableName, const QStringList& fields);
+    QStringList getQueryList();
     void loadTable(const QSqlDatabase& database, const QString& tableName);
 
 private slots:
@@ -43,15 +47,25 @@ private slots:
     void moveUpField();
     void moveDownField();
 
+    void onModelDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles);
+
 protected:
     virtual void accept();
+    QStringList copyTable();
 
 private:
     Ui::TableDialog *ui;
+    DialogType m_type;
     QStandardItemModel* m_model;
     TableDialogDelegate* m_delegate;
-    QString m_query;
     CodeEditorHighlighter* m_highlighter;
+
+    //return query list
+    QStringList m_queryList;
+
+    //fields lists used for modifying table
+    QStringList m_oldFields;
+    QStringList m_newFields;
 };
 
 #endif // TABLEDIALOG_H

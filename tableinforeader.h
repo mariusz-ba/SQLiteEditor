@@ -18,6 +18,7 @@
 class TableInfoReader
 {
 public:
+    virtual ~TableInfoReader() {}
     virtual QList<ColumnInfo> retrieveTableInfo(const QString& tableName) = 0;
 };
 

@@ -190,21 +190,29 @@ void MainWindow::createTable()
     TableDialog dialog;
     if(dialog.exec() == TableDialog::Accepted)
     {
-        QSqlQuery creating(dialog.getQuery());
-        creating.exec();
+        foreach(QString query, dialog.getQueryList())
+        {
+            QSqlQuery create(query);
+            create.exec();
+        }
+
         loadDatabase();
     }
 }
 
 void MainWindow::modifyTable()
 {
-    TableDialog dialog;
+    TableDialog dialog(TableDialog::MODIFY);
     dialog.loadTable(db, ui->treeView->currentIndex().data().toString());
 
     if(dialog.exec() == TableDialog::Accepted)
     {
-        QSqlQuery creating(dialog.getQuery());
-        creating.exec();
+        foreach(QString query, dialog.getQueryList())
+        {
+            QSqlQuery modify(query);
+            modify.exec();
+        }
+
         loadDatabase();
     }
 }

@@ -88,7 +88,7 @@ QString SQLiteTableInfoReader::getFiledType(const QString &tableName, const int 
          * Firstly, searching for column that user gives in parameter @column
          */
         if(i == column) {
-            qDebug() << information_query.record().value(2).toString();
+            //qDebug() << information_query.record().value(2).toString();
             return_value = information_query.record().value(2).toString();
             /**
              * Checking if field has primary key indicator. If so, then we also need to check for autoincrement type.

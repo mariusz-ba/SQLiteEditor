@@ -1,0 +1,6 @@
+TODOS
+=====
+
+[ ] Sometimes table dialog doesn't load table strucutre.
+[ ] About dialog
+[ ] Connect all unconnected signals

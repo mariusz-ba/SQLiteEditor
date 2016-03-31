@@ -20,7 +20,7 @@ DatabaseTreeNode *DatabaseTreeParser::parse(const QSqlDatabase &database)
     DatabaseTreeNode* treeRootNode = new DatabaseTreeNode(QString("Tables (%1)").arg(tables.size()), QString());
     treeRootNode->parent = rootNode;
     rootNode->children.push_back(treeRootNode);
-    qDebug() << treeRootNode->name << " " << treeRootNode->type;
+    //qDebug() << treeRootNode->name << " " << treeRootNode->type;
 
     for(int i=0; i<tables.size(); ++i)
     {
@@ -31,7 +31,7 @@ DatabaseTreeNode *DatabaseTreeParser::parse(const QSqlDatabase &database)
         tableNode->icon = QIcon(":/img/icon-table.png");
         treeRootNode->children.push_back(tableNode);
 
-        qDebug() << "\t" << tableNode->name << " " << tableNode->type;
+        //qDebug() << "\t" << tableNode->name << " " << tableNode->type;
 
         for(int j=0; j<columnInfo.size(); ++j)
         {
@@ -40,9 +40,11 @@ DatabaseTreeNode *DatabaseTreeParser::parse(const QSqlDatabase &database)
             fieldNode->icon = QIcon(":/img/icon-field.png");
             tableNode->children.push_back(fieldNode);
 
-            qDebug() << "\t\t" << fieldNode->name << " " << fieldNode->type;
+            //qDebug() << "\t\t" << fieldNode->name << " " << fieldNode->type;
         }
     }
+
+    delete reader;
 
     return rootNode;
 }
