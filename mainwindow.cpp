@@ -116,7 +116,7 @@ void MainWindow::openDatabase()
 
 void MainWindow::writeChanges()
 {
-
+    // what to do here ? xD
 }
 
 void MainWindow::closeDatabase()
@@ -125,6 +125,7 @@ void MainWindow::closeDatabase()
         db.close();
     m_sqlTableModel->clear();
     ui->table_ComboBox->clear();
+    m_treeModel->clear();
 
     emit databaseOpened(false);
     ui->statusBar->showMessage("Database not open.");
@@ -150,7 +151,8 @@ bool MainWindow::maybeSave()
 
 void MainWindow::about()
 {
-
+    AboutDialog dialog;
+    dialog.exec();
 }
 
 void MainWindow::addRecord()
@@ -352,6 +354,7 @@ void MainWindow::setupUi()
     //Setting up connections for main actions
     connect(ui->actionNew_Database, SIGNAL(triggered()), this, SLOT(newDatabase()));
     connect(ui->actionOpen_Database, SIGNAL(triggered()), this, SLOT(openDatabase()));
+    connect(ui->actionClose_Database, SIGNAL(triggered()), this, SLOT(maybeSave()));
 
     //Setting up connectins for actions on 'Browse Database' tab
     connect(ui->table_ComboBox, SIGNAL(currentTextChanged(QString)), this, SLOT(setCurrentTable(QString)));
@@ -379,6 +382,9 @@ void MainWindow::setupUi()
     //rconnect(ui->treeView, &QTreeView::expanded, [&](){ui->treeView->resizeColumnToContents(0);});
     connect(ui->treeView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onCustomContextMenu(QPoint)));
     connect(ui->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(treeViewActivated(QModelIndex)));
+
+    connect(ui->actionToolbar, SIGNAL(triggered(bool)), ui->mainToolBar, SLOT(setVisible(bool)));
+    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
 
     ui->treeView->setRootIsDecorated(true);
 }

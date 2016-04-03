@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     databasetreenode.cpp \
     databasetreeparser.cpp \
     codeeditor.cpp \
-    codeeditorhighlighter.cpp
+    codeeditorhighlighter.cpp \
+    aboutdialog.cpp
 
 HEADERS  += mainwindow.h \
     tabledialog.h \
@@ -39,10 +40,12 @@ HEADERS  += mainwindow.h \
     databasetreenode.h \
     databasetreeparser.h \
     codeeditor.h \
-    codeeditorhighlighter.h
+    codeeditorhighlighter.h \
+    aboutdialog.h
 
 FORMS    += mainwindow.ui \
-    tabledialog.ui
+    tabledialog.ui \
+    aboutdialog.ui
 
 RESOURCES += \
     resources.qrc

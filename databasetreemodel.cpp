@@ -19,6 +19,14 @@ void DatabaseTreeModel::setRootNode(DatabaseTreeNode *node)
     endResetModel();
 }
 
+void DatabaseTreeModel::clear()
+{
+    beginResetModel();
+    delete rootNode;
+    rootNode = Q_NULLPTR;
+    endResetModel();
+}
+
 QModelIndex DatabaseTreeModel::index(int row, int column, const QModelIndex &parent) const
 {
     if(!rootNode || row < 0 || column < 0)

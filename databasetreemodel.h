@@ -20,6 +20,7 @@ public:
     DatabaseTreeModel(QObject* parent = 0);
     ~DatabaseTreeModel();
     void setRootNode(DatabaseTreeNode* node);
+    void clear();
 
     virtual QModelIndex index(int row, int column, const QModelIndex &parent) const;
     virtual QModelIndex parent(const QModelIndex &child) const;

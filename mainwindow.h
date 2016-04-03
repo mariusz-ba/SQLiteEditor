@@ -27,6 +27,7 @@
 #include "databasetreeparser.h"
 #include "databasetreemodel.h"
 #include "tabledialog.h"
+#include "aboutdialog.h"
 
 #include "codeeditor.h"
 

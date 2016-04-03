@@ -280,8 +280,7 @@
     <property name="title">
      <string>View</string>
     </property>
-    <addaction name="actionWindow_1"/>
-    <addaction name="actionWindow_2"/>
+    <addaction name="actionToolbar"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -343,17 +342,22 @@
     <string>Create Index...</string>
    </property>
   </action>
-  <action name="actionWindow_1">
-   <property name="text">
-    <string>Window 1</string>
+  <action name="actionToolbar">
+   <property name="checkable">
+    <bool>true</bool>
    </property>
-  </action>
-  <action name="actionWindow_2">
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>Window 2</string>
+    <string>Toolbar</string>
    </property>
   </action>
   <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/img/icon-about.png</normaloff>:/img/icon-about.png</iconset>
+   </property>
    <property name="text">
     <string>About</string>
    </property>
@@ -375,5 +379,22 @@
  <resources>
   <include location="resources.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>491</x>
+     <y>315</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
